@@ -1,0 +1,50 @@
+---
+title: "Data Science Avancées"
+# output: pdf_document
+date: "2023-03-28"
+output:
+  pdf_document: 
+    fig_height: 6
+    keep_tex: yes
+    highlight: kate
+    latex_engine: xelatex
+    number_sections: yes
+  html_document:
+    highlight: kate
+  word_document:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Importation du jeu de données
+```{r}
+bbc <- read.table(
+  file= "../../src/datasets/data/bbc.csv",
+  header=TRUE,
+  sep=",",
+  fileEncoding= "latin1")
+```
+```header=TRUE``` : précise que le nom des variables est présent
+
+```sep=";"``` : précise que le séparateur de colonnes est le point-virgule (fréquent dans les fichiers csv, pour une tabulation il faudrait écrire ```sep="\t"```)
+
+```dec="."``` : le séparateur de décimale est le point (parfois dans Excel on trouve la virgule)
+
+```row.names=1``` : précise que le nom des individus est dans la premiére colonne du tableau
+
+```check.names=FALSE``` : impose que le nom des colonnes soit pris tel que dans le fichier (sinon les espaces sont remplacés par des points et des X sont mis avant les nombres)
+
+
+Il est important de s'assurer que l'importation a bien été effectuée, et notamment que les variables quantitatives sont bien considérées comme quantitatives et les variables qualitatives bien considérées comme qualitatives.
+
+Voiçi un apperçu du jeu de donnée.
+
+
+```{r}
+# on considère indexation de base 
+df.bbc = dplyr::tibble(bbc[-1])
+head(df.bbc)
+```

@@ -1,0 +1,1 @@
+from ._vectoriser import Word2VecVectorizer
