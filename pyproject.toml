@@ -50,6 +50,7 @@ cython = "^0.29.34"
 scipy = "^1.10.1"
 six = "^1.16.0"
 hdbscan = "^0.8.29"
+seaborn = "^0.12.2"
 
 
 [build-system]

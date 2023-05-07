@@ -7,11 +7,11 @@ def plot2d(
         y,
         x,
         target_idx_colors=None,
-        s=0.1,
+        s=1,
         cmap='Accent',
         alpha=0.5,
-        h_pad=None,
-        w_pad=None,
+        # h_pad=None,
+        # w_pad=None,
         nth_dim=(0, 1),
         target_names=None,
         t: str = 'Graph'
@@ -32,7 +32,7 @@ def plot2d(
     ax.set_xlabel(f'z{nth_dim[0]}')
     ax.set_ylabel(f'z{nth_dim[1]}')
     ax.set_title(t)
-    plt.tight_layout(h_pad=h_pad, w_pad=w_pad)
+    # plt.tight_layout(h_pad=h_pad, w_pad=w_pad)
     plt.show()
 
 
