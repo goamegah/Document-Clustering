@@ -3882,6 +3882,60 @@ examples = ["matplotlib (>=3.1.3)", "pandas (>=1.0.5)", "plotly (>=5.10.0)", "po
 tests = ["black (>=22.3.0)", "flake8 (>=3.8.2)", "matplotlib (>=3.1.3)", "mypy (>=0.961)", "numpydoc (>=1.2.0)", "pandas (>=1.0.5)", "pooch (>=1.6.0)", "pyamg (>=4.0.0)", "pytest (>=5.3.1)", "pytest-cov (>=2.9.0)", "scikit-image (>=0.16.2)"]
 
 [[package]]
+name = "scikit-learn-extra"
+version = "0.3.0"
+description = "A set of tools for scikit-learn."
+category = "main"
+optional = false
+python-versions = ">=3.6"
+files = [
+    {file = "scikit-learn-extra-0.3.0.tar.gz", hash = "sha256:7912d43384470d77609e53819d0291967f21010e5c3a3847f9026fc02f9c7893"},
+    {file = "scikit_learn_extra-0.3.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:44654b08cd142ddaa044ffc51d84f31ea3caa3f7b53e3d0024303a38150488cb"},
+    {file = "scikit_learn_extra-0.3.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ec82da4c00423b08436d753f319ab9ec136688be2961274d23e73f9221fdbbf9"},
+    {file = "scikit_learn_extra-0.3.0-cp310-cp310-win_amd64.whl", hash = "sha256:a0e4e79a120e6c8d29f504106160be29c3b06581ea4cb56f4b15ba4c73c7e9ec"},
+    {file = "scikit_learn_extra-0.3.0-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:8a39e141e060a61c951d9a14c72039b40bb5cd7d32a794b0b20470789d751214"},
+    {file = "scikit_learn_extra-0.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:91878f079da2d81b989c0bc3019befc7a3228fee29384065d06badc4ca60f4ec"},
+    {file = "scikit_learn_extra-0.3.0-cp311-cp311-win_amd64.whl", hash = "sha256:2cfadf9b6dbae0803db32cf477aff8a4ba5c15244ffd30d6312df2ef7043e16a"},
+    {file = "scikit_learn_extra-0.3.0-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:837c6805f1948bab0172ff85470fbf568cfb56e8b6a371b892c01f80e5064b67"},
+    {file = "scikit_learn_extra-0.3.0-cp36-cp36m-manylinux1_i686.whl", hash = "sha256:cf2cb09d1fa100a9c8ff8eb3561f69af3c73d94191652873521039030519a646"},
+    {file = "scikit_learn_extra-0.3.0-cp36-cp36m-manylinux1_x86_64.whl", hash = "sha256:8df4782c79cf8c0125523d48e87f00ff8e001004e4ed57743e983f02b10a63cf"},
+    {file = "scikit_learn_extra-0.3.0-cp36-cp36m-manylinux2010_i686.whl", hash = "sha256:9ee6812725b706ae53818845718050c439cc3e02031dc81ed72d6a2679c3f694"},
+    {file = "scikit_learn_extra-0.3.0-cp36-cp36m-manylinux2010_x86_64.whl", hash = "sha256:15681200d239bd414ea616506c7be7c97f33abb88ade944e7a225b42b73bbfa8"},
+    {file = "scikit_learn_extra-0.3.0-cp36-cp36m-win32.whl", hash = "sha256:589f11733ce0197bd46189f6f9013696b8f43f85fc66935a90a918cb7965ca1b"},
+    {file = "scikit_learn_extra-0.3.0-cp36-cp36m-win_amd64.whl", hash = "sha256:265113d3280c17261f4598b2d4277a17e1398076cc5330c6d1fc1b6664c15ea8"},
+    {file = "scikit_learn_extra-0.3.0-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:911435d6fb5adbf1883f84f84e5d2cf1ab9e8131da5966097e4294175387e4d4"},
+    {file = "scikit_learn_extra-0.3.0-cp37-cp37m-manylinux1_i686.whl", hash = "sha256:f892e0ab363735e0e2322a716a924bd7bdecf8397be109234fdf17a5024d933f"},
+    {file = "scikit_learn_extra-0.3.0-cp37-cp37m-manylinux1_x86_64.whl", hash = "sha256:5fff5725d5688242b0e61aefdf79961045016ff0e482164c72b8740f64487325"},
+    {file = "scikit_learn_extra-0.3.0-cp37-cp37m-manylinux2010_i686.whl", hash = "sha256:53c07c616b6acb775c365a0df0ca360a0c29c5570e344ca66f3f0986dca3fbcd"},
+    {file = "scikit_learn_extra-0.3.0-cp37-cp37m-manylinux2010_x86_64.whl", hash = "sha256:6c34635914cb1d5274891011c364595141fb0b2ecc93c84b8d8cdf086341c225"},
+    {file = "scikit_learn_extra-0.3.0-cp37-cp37m-win32.whl", hash = "sha256:2f694a2304c5dc31f981e443106ec68c7fe4ca7b7af8145218166078ef27c2ca"},
+    {file = "scikit_learn_extra-0.3.0-cp37-cp37m-win_amd64.whl", hash = "sha256:4627f65d50efe8a71165d8917467fda9ff40644c336da5c40a5c4b75633e88d4"},
+    {file = "scikit_learn_extra-0.3.0-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:3c619d66951b7fd0b276d20af19ad4e5d3018219d1337c26a4f72643823798fe"},
+    {file = "scikit_learn_extra-0.3.0-cp38-cp38-manylinux1_i686.whl", hash = "sha256:05cf853c4577f87f2b286b1d1adc921e0de1d0cf313702b2f48ad5fea8d81ea2"},
+    {file = "scikit_learn_extra-0.3.0-cp38-cp38-manylinux1_x86_64.whl", hash = "sha256:1a64a752c59a12d7f477a7bdae636a188e7c32933d463d006bf0af7731506562"},
+    {file = "scikit_learn_extra-0.3.0-cp38-cp38-manylinux2010_i686.whl", hash = "sha256:b8da5f9c9a184683df085b6bb55264870ed6a9f3f5e0790af1badfe34764da63"},
+    {file = "scikit_learn_extra-0.3.0-cp38-cp38-manylinux2010_x86_64.whl", hash = "sha256:1110b67d62f8be9edbade232c40eab3a5458e8c1f19e6afb3f2a685dca4f3cf1"},
+    {file = "scikit_learn_extra-0.3.0-cp38-cp38-win32.whl", hash = "sha256:e7f9eef0316d7ad8cccafc639aa1b20b1fe7e79cfe802c338455c561f749d548"},
+    {file = "scikit_learn_extra-0.3.0-cp38-cp38-win_amd64.whl", hash = "sha256:60780faa1b80eddf9e617804cb19d87e22718080da61aefd38d1c01cdc938634"},
+    {file = "scikit_learn_extra-0.3.0-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:b2ee8cb4bcb5ba8e632e8d7e7400eca5eaa8ed05a7905ba2de61618c036afc37"},
+    {file = "scikit_learn_extra-0.3.0-cp39-cp39-manylinux1_i686.whl", hash = "sha256:ebfc1938c2deb1dd10c43394ac40bf4d6b2814428e2a984ec71c054e8dd5e592"},
+    {file = "scikit_learn_extra-0.3.0-cp39-cp39-manylinux1_x86_64.whl", hash = "sha256:8041adcad0cc1b7d6c5b8485fb0cfc849e9db84c588425eee8781186581f9dce"},
+    {file = "scikit_learn_extra-0.3.0-cp39-cp39-manylinux2010_i686.whl", hash = "sha256:0986559451a027dabd4bb9781a9621c5bfde10bd477001c1f60718b2f41900b9"},
+    {file = "scikit_learn_extra-0.3.0-cp39-cp39-manylinux2010_x86_64.whl", hash = "sha256:f79b071577d2895114e40b3df5f189555259852d2d796ba30f17535f9be6ac6f"},
+    {file = "scikit_learn_extra-0.3.0-cp39-cp39-win32.whl", hash = "sha256:c3061f62eab8b1b5ab62f74888121affeeca1abadf2d5b6a817aecad5b984471"},
+    {file = "scikit_learn_extra-0.3.0-cp39-cp39-win_amd64.whl", hash = "sha256:afc6a0dce83487f95dd288368bf09fbd2d23483389840e2369302455404180d6"},
+]
+
+[package.dependencies]
+numpy = ">=1.13.3"
+scikit-learn = ">=0.23.0"
+scipy = ">=0.19.1"
+
+[package.extras]
+docs = ["matplotlib", "numpydoc", "pillow", "sphinx", "sphinx-gallery", "sphinx-rtd-theme"]
+tests = ["pytest", "pytest-cov"]
+
+[[package]]
 name = "scipy"
 version = "1.10.1"
 description = "Fundamental algorithms for scientific computing in Python"
@@ -5087,4 +5141,4 @@ testing = ["big-O", "flake8 (<5)", "jaraco.functools", "jaraco.itertools", "more
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.10,<3.12"
-content-hash = "9eed4b538892c2858c19c9a3a0494e75178d69fdf9405d582c07020b5864d010"
+content-hash = "dba917a5bef0c90d3dd9f0962071d9bd826c61547a1b396966aa33aecaa3fece"
