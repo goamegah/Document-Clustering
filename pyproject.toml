@@ -53,6 +53,7 @@ hdbscan = "^0.8.29"
 seaborn = "^0.12.2"
 scikit-learn-extra = "^0.3.0"
 coclust = "^0.2.1"
+spherecluster = "^0.1.7"
 
 
 [build-system]

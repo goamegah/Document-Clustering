@@ -33,6 +33,7 @@ def plot2d(
     ax.set_ylabel(f'z{nth_dim[1]}')
     ax.set_title(t)
     # plt.tight_layout(h_pad=h_pad, w_pad=w_pad)
+    #save_fig("explained_variance_plot")
     plt.show()
 
 
