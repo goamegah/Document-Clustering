@@ -16,7 +16,8 @@ from nltk.tokenize import word_tokenize
 from nltk.stem import WordNetLemmatizer
 
 stop_words = stopwords.words('english')  # defining stop_words
-# stop_words.remove('not') # removing not from the stop_words list as it contains value in negative movies
+# stop_words.remove('not') # removing not from the stop_words list as it contains value in
+# negative movies
 lemmatizer = WordNetLemmatizer()
 
 
