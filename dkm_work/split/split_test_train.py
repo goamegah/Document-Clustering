@@ -13,4 +13,4 @@ train_indices, test_indices = train_test_split(df.index, test_size=0.9, random_s
 np.savetxt("validation", train_indices, fmt='%d')
 np.savetxt('test', test_indices, fmt='%d')
 
-#%%
+

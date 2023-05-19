@@ -88,7 +88,7 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
     config = tf.compat.v1.ConfigProto(gpu_options=gpu_options)
 
     # Definition of the randomly-drawn (0-10000) seeds to be used for each run
-    seeds = [8905, 9129, 291, 4012, 1256, 6819, 4678, 6971, 1362, 575]
+    seeds = list(np.random.randint(low=0,high=10001,size=n_runs))
 
     if validation:
         list_validation_acc = []
@@ -313,4 +313,4 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
         }
 
 if __name__=="__main__":
-    print(deep_kmeans(dataset="CLASSIC3",params=PARAMS,n_runs=1))
+    print(deep_kmeans(dataset="CLASSIC3",params=PARAMS,n_runs=3))

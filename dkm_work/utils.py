@@ -73,12 +73,12 @@ def write_list(file_name, array):
             f.write("{}\n".format(item))
 
 
-def load_dataset(file_path,min_df=10):
+def load_dataset(file_path,min=1):
     """
         load dataset and return Bag of Word Representation of df["text"]
     """
     df=pd.read_csv(file_path)
-    tfidf_vectorizer = TfidfVectorizer(min_df=min_df)
+    tfidf_vectorizer = TfidfVectorizer(min_df=min)
     X_docs_tfidf = tfidf_vectorizer.fit_transform(df['text'])
     labels = df["label"].values
     classes = np.unique(labels)
