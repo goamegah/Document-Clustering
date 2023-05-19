@@ -1,3 +1,0 @@
-load spacy model:python -m spacy download en_core_web_md
-
-https://rare-technologies.com/word2vec-tutorial/ for word2vec (gensim)
