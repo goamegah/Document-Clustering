@@ -94,13 +94,16 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
         list_validation_acc = []
         list_validation_ari = []
         list_validation_nmi = []
+        list_validation_embeddings=[]
         list_test_acc = []
         list_test_ari = []
         list_test_nmi = []
+        list_test_embeddings=[]
     else:
         list_acc = []
         list_ari = []
         list_nmi = []
+        list_embeddings=[]
 
     for run in range(n_runs):
         # Use a fixed seed for this run, as defined in the seed list
@@ -122,6 +125,7 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
 
             # Variables to save tensor content
             distances = np.zeros((specs.n_clusters, specs.n_samples))
+            embeddings = np.zeros((specs.n_samples, specs.embedding_size), dtype=float)
 
             # Pretrain if specified
             if pretrain:
@@ -158,7 +162,6 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
                     # Split the cluster assignments into validation and test ones
                     validation_cluster_assign = np.asarray([kmeans_model.labels_[i] for i in specs.validation_indices])
                     test_cluster_assign = np.asarray([kmeans_model.labels_[i] for i in specs.test_indices])
-
                     # Evaluate the clustering validation performance using the ground-truth labels
                     validation_acc = cluster_acc(validation_target, validation_cluster_assign)
                     print("Validation ACC", validation_acc)
@@ -166,7 +169,6 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
                     print("Validation ARI", validation_ari)
                     validation_nmi = normalized_mutual_info_score(validation_target, validation_cluster_assign)
                     print("Validation NMI", validation_nmi)
-
                     # Evaluate the clustering test performance using the ground-truth labels
                     test_acc = cluster_acc(test_target, test_cluster_assign)
                     print("Test ACC", test_acc)
@@ -174,6 +176,7 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
                     print("Test ARI", test_ari)
                     test_nmi = normalized_mutual_info_score(test_target, test_cluster_assign)
                     print("Test NMI", test_nmi)
+
                 else:
                     # Evaluate the clustering performance using the ground-truth labels
                     acc = cluster_acc(target, kmeans_model.labels_)
@@ -206,9 +209,13 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
                         #current_batch_size = np.shape(data_batch)[0] # Can be different from batch_size for unequal splits
 
                         # Run the computation graph on the data batch
-                        _, loss_, stack_dist_, cluster_rep_, ae_loss_, kmeans_loss_ =\
-                            sess.run((cg.train_op, cg.loss, cg.stack_dist, cg.cluster_rep, cg.ae_loss, cg.kmeans_loss),
+                        _, loss_, stack_dist_, cluster_rep_, ae_loss_, kmeans_loss_,embeddings_ =\
+                            sess.run((cg.train_op, cg.loss, cg.stack_dist, cg.cluster_rep, cg.ae_loss, cg.kmeans_loss,cg.embedding),
                                      feed_dict={cg.input: data_batch, cg.alpha: alphas[k]})
+
+                        # Save the embeddings for batch samples
+                        for j in range(len(indices)):
+                            embeddings[indices[j], :] = embeddings_[j, :]
 
                         # Save the distances for batch samples
                         for j in range(len(indices)):
@@ -247,6 +254,8 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
                         print("Test ARI", test_ari)
                         test_nmi = normalized_mutual_info_score(test_target, test_cluster_assign)
                         print("Test NMI", test_nmi)
+                        validation_embeddings=np.array([embeddings[i,:] for i in specs.validation_indices])
+                        test_embeddings=np.array([embeddings[i,:] for i in specs.test_indices])
                     else:
                         # Evaluate the clustering performance using the ground-truth labels
                         acc = cluster_acc(target, cluster_assign)
@@ -256,18 +265,22 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
                         nmi = normalized_mutual_info_score(target, cluster_assign)
                         print("NMI", nmi)
 
+
             # Record the clustering performance for the run
             if validation:
                 list_validation_acc.append(validation_acc)
                 list_validation_ari.append(validation_ari)
                 list_validation_nmi.append(validation_nmi)
+                list_validation_embeddings.append(validation_embeddings)
                 list_test_acc.append(test_acc)
                 list_test_ari.append(test_ari)
                 list_test_nmi.append(test_nmi)
+                list_test_embeddings.append(test_embeddings)
             else:
                 list_acc.append(acc)
                 list_ari.append(ari)
                 list_nmi.append(nmi)
+                list_embeddings.append(embeddings)
 
     if validation:
         list_validation_acc = np.array(list_validation_acc)
@@ -288,13 +301,16 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
                 "labels":validation_cluster_assign,
                 "acc":list_validation_acc,
                 "ari":list_validation_ari,
-                "nmi":list_validation_nmi
+                "nmi":list_validation_nmi,
+                "embeddings":list_validation_embeddings
             },
             "test":{
                 "labels":test_cluster_assign,
                 "acc":list_test_acc,
                 "ari":list_test_ari,
-                "nmi":list_test_nmi
+                "nmi":list_test_nmi,
+                "embeddings":list_test_embeddings
+
             }
         }
     else:
@@ -308,9 +324,11 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
             "labels":cluster_assign,
             "acc":list_acc,
             "ari":list_ari,
-            "nmi":list_nmi
+            "nmi":list_nmi,
+            "embeddings":embeddings
+
 
         }
 
 if __name__=="__main__":
-    print(deep_kmeans(dataset="CLASSIC3",params=PARAMS,n_runs=3))
+    print(deep_kmeans(dataset="CLASSIC4",params=PARAMS,n_runs=1))
