@@ -187,4 +187,3 @@ class DcnCompGraph(object):
             self.count_update = tf.assign(count[k], count[k] + 1)  # Updated count for cluster assignments
             new_rep = self.cluster_rep[k] - (1 / count[k]) * (self.cluster_rep[k] - self.embedding[j])
             self.cluster_rep_update = tf.assign(self.cluster_rep[k], new_rep)
-#%%

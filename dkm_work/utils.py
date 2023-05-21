@@ -6,8 +6,10 @@ import tensorflow as tf
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.utils import Bunch
 from scipy.sparse import csr_matrix
-from dkm_work.linear_assignment_ import linear_assignment
 
+from core.word_embedding import Word2VecVectorizer
+from dkm_work.linear_assignment_ import linear_assignment
+from gensim.models import KeyedVectors
 TF_FLOAT_TYPE = tf.float32
 
 def cluster_acc(y_true, y_pred):
@@ -73,13 +75,21 @@ def write_list(file_name, array):
             f.write("{}\n".format(item))
 
 
-def load_dataset(file_path,min=1):
+def load_dataset(file_path,embeddings_path,method="glove"):
     """
         load dataset and return Bag of Word Representation of df["text"]
     """
     df=pd.read_csv(file_path)
-    tfidf_vectorizer = TfidfVectorizer(min_df=min)
-    X_docs_tfidf = tfidf_vectorizer.fit_transform(df['text'])
+    if method == "glove":
+        model_emb = KeyedVectors\
+            .load_word2vec_format(embeddings_path, binary=False, no_header=True)
+        vectorizer = Word2VecVectorizer(model=model_emb)
+        X=vectorizer.fit_transform(df["text"])
+    elif method == "Word2Vec":
+        model_emb=KeyedVectors\
+            .load_word2vec_format(embeddings_path, binary=True)
+        vectorizer = Word2VecVectorizer(model=model_emb)
+        X=vectorizer.fit_transform(df["text"])
     labels = df["label"].values
     classes = np.unique(labels)
     class_to_index = {c: i for i, c in enumerate(classes)}
@@ -92,7 +102,7 @@ def load_dataset(file_path,min=1):
         y[i, j] = 1
     target_names=list(sorted(df["label"].unique()))
 
-    return Bunch(data=X_docs_tfidf,target=csr_matrix(y),
+    return Bunch(data=X,target=csr_matrix(y),
                  target_names=target_names),classes
 
 

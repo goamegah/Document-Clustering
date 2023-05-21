@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from globals import FILES_PATH
+from globals import FILES_PATH,embeddings_path,representation
 import tensorflow as tf
 import numpy as np
 from dkm_work.utils import read_list, load_dataset
@@ -10,7 +10,7 @@ import scipy.sparse as sp
 file_path=FILES_PATH["bbc"]
 df_name="bbc"
 # Fetch the dataset
-dataset,classes = load_dataset(file_path)
+dataset,classes = load_dataset(file_path,method=representation,embeddings_path=embeddings_path)
 print("Dataset loaded...")
 data = dataset.data #matrix n*d
 target = dataset.target #matrix n* number_categories
@@ -33,11 +33,8 @@ target = sp.vstack([test_target, validation_target])
 test_indices = np.asarray(range(0, n_test)) # Test points come first in filtered dataset
 validation_indices = np.asarray(range(n_test, n_test + n_validation)) # Validation points come after in filtered dataset
 
-# Pre-process the dataset
-## Filter words based on tf-idf
-sum_tfidf = np.asarray(sp.spmatrix.sum(data, axis=0))[0] # Sum of tf-idf for all words based on the filtered dataset
-word_indices = np.argpartition(-sum_tfidf, 2000)[:2000] # Keep only the 2000 top words in the vocabulary
-data = data[:, word_indices].toarray() # Switch from sparse matrix to full matrix
+
+data = data.toarray() # convert data to an array
 
 #load target (ndarray)
 M=csr_matrix.toarray(target) #M: n samples times category

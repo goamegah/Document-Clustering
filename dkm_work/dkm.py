@@ -331,4 +331,4 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
         }
 
 if __name__=="__main__":
-    print(deep_kmeans(dataset="CLASSIC4",params=PARAMS,n_runs=1))
+    print(deep_kmeans(dataset="BBC",params=PARAMS,n_runs=1))

@@ -5,8 +5,8 @@ PARAMS={
     "lambda": 1.0, #Value of the hyperparameter weighing the clustering loss against the reconstruction loss
     "batch_size" : 256, # Size of the mini-batches used in the stochastic optimizer
     "validation" : False, # Specify if data should be split into validation and test sets
-    "pretrain" : False, # Specify if DKM's autoencoder should be pretrained
-    "annealing" : True, # Specify if annealing should be used
+    "pretrain" : True, # Specify if DKM's autoencoder should be pretrained
+    "annealing" : False, # Specify if annealing should be used
     "seeded" : True,# Specify if runs are seeded,
     "cpu":True
 
@@ -17,5 +17,8 @@ FILES_PATH={
     "classic4":"/home/khaldi/Downloads/classic4.csv",
     "bbc":"/home/khaldi/Downloads/bbc.csv"
 }
+
+representation="glove"
+embeddings_path="/home/khaldi/glove.840B.300d.txt"
 
 
