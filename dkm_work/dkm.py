@@ -9,9 +9,9 @@ import tensorflow as tf
 from sklearn.metrics.cluster import adjusted_rand_score
 from sklearn.metrics.cluster import normalized_mutual_info_score
 from sklearn.cluster import KMeans
-from utils import cluster_acc
-from utils import next_batch
-from compgraph import DkmCompGraph
+from dkm_work.utils import cluster_acc
+from dkm_work.utils import next_batch
+from dkm_work.compgraph import DkmCompGraph
 
 
 
@@ -331,4 +331,4 @@ def deep_kmeans(dataset="CLASSIC3",params:dict=PARAMS,n_runs=1) -> dict:
         }
 
 if __name__=="__main__":
-    print(deep_kmeans(dataset="BBC",params=PARAMS,n_runs=1))
+    print(deep_kmeans(dataset="CLASSIC4",params=PARAMS,n_runs=1))

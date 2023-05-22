@@ -8,7 +8,11 @@ import scipy.sparse as sp
 
 
 file_path=FILES_PATH["classic3"]
+
 df_name="classic3"
+test_path=f"/home/khaldi/Documents/text-clustering/dkm_work/split/{df_name}/test"
+validation_path=f"/home/khaldi/Documents/text-clustering/dkm_work/split/{df_name}/validation"
+
 # Fetch the dataset
 dataset,classes = load_dataset(file_path,method=representation,embeddings_path=embeddings_path)
 print("Dataset loaded...")
@@ -16,9 +20,9 @@ data = dataset.data #matrix n*d
 target = dataset.target #matrix n* number_categories
 
 # Get the split between training/test set and validation set
-test_indices = read_list(f"./split/{df_name}/test") #array of indices
+test_indices = read_list(test_path) #array of indices
 n_test = test_indices.shape[0]
-validation_indices = read_list(f"./split/{df_name}/validation") #array of indices
+validation_indices = read_list(validation_path) #array of indices
 n_validation = validation_indices.shape[0]
 
 # Filter the dataset

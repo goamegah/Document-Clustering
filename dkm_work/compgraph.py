@@ -4,7 +4,7 @@ __author__ = "Thibaut Thonet, Maziar Moradi Fard"
 __license__ = "GPL"
 
 import tensorflow as tf
-from utils import TF_FLOAT_TYPE
+from dkm_work.utils import TF_FLOAT_TYPE
 
 
 
