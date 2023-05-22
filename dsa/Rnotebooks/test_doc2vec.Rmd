@@ -22,7 +22,7 @@ knitr::opts_chunk$set(echo = TRUE)
 # Importation du jeu de données
 ```{r}
 bbc <- read.table(
-  file= "../../src/datasets/data/bbc.csv",
+  file= "~/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets/data/bbc.csv",
   header=TRUE,
   sep=",",
   fileEncoding= "latin1")
@@ -48,3 +48,25 @@ Voiçi un apperçu du jeu de donnée.
 df.bbc = dplyr::tibble(bbc[-1])
 head(df.bbc)
 ```
+
+```{r}
+# loading clustrd
+library(clustrd)
+library(textmineR)
+```
+
+
+```{r}
+NLTK = reticulate::import("nltk.corpus")
+
+text_reuters = NLTK$reuters 
+
+
+nltk = reticulate::import("nltk")
+
+# if the 'reuters' data is not already available then it can be downloaded from within R
+
+nltk$download('reuters')
+```
+
+

@@ -1,0 +1,212 @@
+---
+title: "Data Science Avancées"
+# output: pdf_document
+date: "2023-03-28"
+output:
+  pdf_document: 
+    fig_height: 6
+    keep_tex: yes
+    highlight: kate
+    latex_engine: xelatex
+    number_sections: yes
+  html_document:
+    highlight: kate
+  word_document:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Importation du jeu de données
+```{r}
+bbc <- read.table(
+  file= "~/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets/data/bbc.csv",
+  header=TRUE,
+  sep=",",
+  fileEncoding= "latin1")
+```
+
+
+```{r}
+# on considère indexation de base 
+df.bbc = dplyr::tibble(bbc[-1])
+head(df.bbc)
+```
+
+```{r}
+df.bbc.docs = dplyr::tibble(bbc["text"]) 
+df.bbc.docs.as.vec = dplyr::pull(df.bbc.docs, text)
+```
+
+
+# Processing, textTinyR - fastTextR - doc2vec - kmeans - cluster_medoids
+
+```{r}
+clust_vec = textTinyR::tokenize_transform_vec_docs(object = df.bbc.docs.as.vec, 
+                                                   as_token = T,
+                                                   to_lower = T, 
+                                                   remove_punctuation_vector = F,
+                                                   remove_numbers = F, 
+                                                   trim_token = T,
+                                                   split_string = T,
+                                                   split_separator = " \r\n\t.,;:()?!//", 
+                                                   remove_stopwords = T,
+                                                   language = "english", 
+                                                   min_num_char = 3, 
+                                                   max_num_char = 100,
+                                                   stemmer = "porter2_stemmer", 
+                                                   threads = 4,
+                                                   verbose = T)
+```
+```{r}
+unq = unique(unlist(clust_vec$token, recursive = F))
+unq # vocab
+```
+I'll build also the term matrix as I'll need the global-term-weights
+
+```{r}
+utl = textTinyR::sparse_term_matrix$new(
+  vector_data = df.bbc.docs.as.vec, 
+  file_data = NULL,
+  document_term_matrix = TRUE)
+
+# term-matrix
+tm = utl$Term_Matrix(sort_terms = FALSE, to_lower = T, remove_punctuation_vector = F,
+                     remove_numbers = F, trim_token = T, split_string = T, 
+                     stemmer = "porter2_stemmer",
+                     split_separator = " \r\n\t.,;:()?!//", remove_stopwords = T,
+                     language = "english", min_num_char = 3, max_num_char = 100,
+                     print_every_rows = 100000, normalize = NULL, tf_idf = F, 
+                     threads = 6, verbose = T)
+
+gl_term_w = utl$global_term_weights()
+str(gl_term_w)
+```
+
+```{r}
+ save_dat = textTinyR::tokenize_transform_vec_docs(
+    object = df.bbc.docs.as.vec, as_token = T, 
+    to_lower = T, 
+    remove_punctuation_vector = F,
+    remove_numbers = F, trim_token = T, 
+    split_string = T, 
+    split_separator = " \r\n\t.,;:()?!//",
+    remove_stopwords = T, language = "english", 
+    min_num_char = 3, max_num_char = 100, 
+    stemmer = "porter2_stemmer", 
+    path_2folder = "M1MLSD2223/ue_data2/text-clustering/core/datasets/data/",
+    threads = 1, # whenever I save data to file set the number threads to 1
+    verbose = T) 
+```
+
+# pour entrainer un model prédire des words embedding 
+```{r}
+#PATH_INPUT = "/path_to_your_folder/output_token_single_file.txt"
+
+#PATH_OUT = "/path_to_your_folder/rt_fst_model"
+
+
+#vecs = fastTextR::skipgram_cbow(input_path = PATH_INPUT, output_path = PATH_OUT, method = "skipgram", lr = 0.075, lrUpdateRate = 100, dim = 300, ws = 5, epoch = 5, minCount = 1, neg = 5, wordNgrams = 2, loss = "ns", bucket = 2e+06, minn = 0, maxn = 0, thread = 6, t = 1e-04, verbose = 2)
+```
+
+# charger les word embedding extern
+```{r}
+init = textTinyR::Doc2Vec$new(
+  token_list = clust_vec$token, 
+  word_vector_FILE = "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/tmp/glove.840B.300d.txt",
+  print_every_rows = 5000, 
+  verbose = TRUE, 
+  copy_data = FALSE)                  # use of external pointer
+```
+
+In case that copy_data = TRUE then the pre-processed data can be observed before invoking one of the ‘doc2vec’ methods,
+
+```{r}
+# res_wv = init$pre_processed_wv()                           
+# 
+# str(res_wv)
+```
+
+Then, I can use one of the three methods (sum_sqrt, min_max_norm, idf) to receive the transformed vectors. These methods are based on the following blog-posts , see especially:
+
+    www.linkedin.com/pulse/duplicate-quora-question-abhishek-thakur
+    https://erogol.com/duplicate-question-detection-deep-learning/
+
+```{r}
+doc2_sum = init$doc2vec_methods(method = "sum_sqrt", threads = 6)
+doc2_norm = init$doc2vec_methods(method = "min_max_norm", threads = 6)
+doc2_idf = init$doc2vec_methods(method = "idf", global_term_weights = gl_term_w, threads = 6)
+
+```
+
+```{r}
+rows_cols = 1:5
+doc2_sum[rows_cols, rows_cols]
+doc2_norm[rows_cols, rows_cols]
+doc2_idf[rows_cols, rows_cols]
+```
+First, someone can seach for the optimal number of clusters using the Optimal_Clusters_KMeans function of the ClusterR package,
+
+```{r}
+scal_dat = ClusterR::center_scale(doc2_sum)     # center and scale the data
+
+
+opt_cl = ClusterR::Optimal_Clusters_KMeans(
+  scal_dat, max_clusters = 15, 
+  criterion = "distortion_fK",
+  fK_threshold = 0.85, num_init = 3, 
+  max_iters = 50,
+  initializer = "kmeans++", tol = 1e-04, 
+  plot_clusters = TRUE,
+  verbose = T, tol_optimal_init = 0.3, 
+  seed = 1)
+```
+
+Based on the output of the Optimal_Clusters_KMeans function, I’ll pick 5 as the optimal number of clusters in order to perform k-means clustering,
+
+```{r}
+num_clust = 5
+
+km = ClusterR::KMeans_rcpp(
+  scal_dat, clusters = num_clust, 
+  num_init = 3, max_iters = 50,
+  initializer = "kmeans++", 
+  fuzzy = T, verbose = F,
+  CENTROIDS = NULL, tol = 1e-04, 
+  tol_optimal_init = 0.3, seed = 2
+  )
+
+
+table(km$clusters)
+```
+
+As a follow up, someone can also perform cluster-medoids clustering using the pearson-correlation metric, which resembles the cosine distance ( the latter is frequently used for text clustering ),
+
+```{r}
+kmed = ClusterR::Cluster_Medoids(
+  scal_dat, clusters = num_clust, 
+  distance_metric = "pearson_correlation",
+  minkowski_p = 1, threads = 6, 
+  swap_phase = TRUE, fuzzy = FALSE, 
+  verbose = F, seed = 1)
+
+
+table(kmed$clusters)
+```
+Finally, the word-frequencies of the documents can be obtained using the cluster_frequency function, which groups the tokens (words) of the documents based on which cluster each document appears,
+
+
+```{r}
+freq_clust = textTinyR::cluster_frequency(
+  tokenized_list_text = clust_vec$token, 
+  cluster_vector = km$clusters, verbose = T)
+```
+
+```{r}
+freq_clust_kmed = textTinyR::cluster_frequency(
+  tokenized_list_text = clust_vec$token, 
+  cluster_vector = kmed$clusters, verbose = T)
+```
+
