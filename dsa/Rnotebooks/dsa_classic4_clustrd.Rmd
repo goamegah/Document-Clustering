@@ -1,0 +1,200 @@
+---
+title: "Data Science Avancées"
+# output: pdf_document
+date: "2023-03-28"
+output:
+  pdf_document: 
+    fig_height: 6
+    keep_tex: yes
+    highlight: kate
+    latex_engine: xelatex
+    number_sections: yes
+  html_document:
+    highlight: kate
+  word_document:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Importation du jeu de données
+```{r}
+df.classic4 <- read.csv("~/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets/data/classic3.csv")
+```
+```header=TRUE``` : précise que le nom des variables est présent
+
+```sep=";"``` : précise que le séparateur de colonnes est le point-virgule (fréquent dans les fichiers csv, pour une tabulation il faudrait écrire ```sep="\t"```)
+
+```dec="."``` : le séparateur de décimale est le point (parfois dans Excel on trouve la virgule)
+
+```row.names=1``` : précise que le nom des individus est dans la premiére colonne du tableau
+
+```check.names=FALSE``` : impose que le nom des colonnes soit pris tel que dans le fichier (sinon les espaces sont remplacés par des points et des X sont mis avant les nombres)
+
+
+Il est important de s'assurer que l'importation a bien été effectuée, et notamment que les variables quantitatives sont bien considérées comme quantitatives et les variables qualitatives bien considérées comme qualitatives.
+
+Voiçi un apperçu du jeu de donnée.
+
+
+```{r}
+# on considère indexation de base 
+df.classic4 = dplyr::tibble(df.classic4[-1])
+head(df.classic4)
+```
+
+```{r}
+# convert as factor
+df.classic4 = df.classic4 |>
+  dplyr::mutate(label = factor(label))
+```
+
+```{r}
+df.classic4.docs = dplyr::tibble(df.classic4["text"])
+df.classic4.labels = dplyr::tibble(df.classic4["label"])
+```
+
+```{r}
+str(df.classic4.labels)
+```
+
+
+
+```{r}
+# get docs frame as vector of docs
+df.classic4.docs.as.vec = dplyr::pull(df.classic4.docs, text)
+df.classic4.labels.as.vec = dplyr::pull(df.classic4.labels, label)
+```
+
+# Tokenizer
+```{r}
+clust_vec = textTinyR::tokenize_transform_vec_docs(
+  object = df.classic4.docs.as.vec, 
+  as_token = T,
+  to_lower = T, 
+  remove_punctuation_vector = F,
+  remove_numbers = F, 
+  trim_token = T,
+  split_string = T,
+  split_separator = " \r\n\t.,;:()?!//", 
+  remove_stopwords = T,
+  language = "english", 
+  min_num_char = 3, 
+  max_num_char = 100,
+  stemmer = "porter2_stemmer", 
+  threads = 4,
+  verbose = T)
+```
+
+I'll build also the term matrix as I'll need the global-term-weights
+
+```{r}
+utl = textTinyR::sparse_term_matrix$new(
+  vector_data = df.classic4.docs.as.vec, 
+  file_data = NULL,
+  document_term_matrix = TRUE)
+
+# term-matrix
+tm = utl$Term_Matrix(
+  sort_terms = FALSE, 
+  to_lower = T, 
+  remove_punctuation_vector = F,
+  remove_numbers = F, trim_token = T, 
+  split_string = T, stemmer = "porter2_stemmer",
+  split_separator = " \r\n\t.,;:()?!//", 
+  remove_stopwords = T, language = "english", 
+  min_num_char = 3, max_num_char = 100,
+  print_every_rows = 100000, normalize = NULL, 
+  tf_idf = F, threads = 6, verbose = T)
+
+gl_term_w = utl$global_term_weights()
+str(gl_term_w)
+```
+
+
+# build Doc2vec matrix using token
+
+Estimate word vectors dimension
+
+```{r}
+textTinyR::dims_of_word_vecs(
+  input_file = "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/tmp/glove.840B.300d.txt", 
+  read_delimiter = "\n")
+```
+
+Let's build doc2vec matrix from word embbeded
+
+```{r}
+# class init
+init = textTinyR::Doc2Vec$new(
+  token_list = clust_vec$token, 
+  word_vector_FILE = "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/tmp/glove.840B.300d.txt",
+  print_every_rows = 5000, 
+  verbose = TRUE, 
+  copy_data = FALSE)  # if true we can inspect 
+```
+
+
+```{r}
+doc2_idf = init$doc2vec_methods(
+  method = "idf", 
+  global_term_weights = gl_term_w, 
+  threads = 6)
+
+doc2_sum = init$doc2vec_methods(method = "sum_sqrt", threads = 6)
+doc2_norm = init$doc2vec_methods(method = "min_max_norm", threads = 6)
+```
+
+```{r}
+rows_cols = 1:5
+doc2_idf[rows_cols, rows_cols]
+```
+
+
+
+```{r}
+dim(doc2_idf)
+```
+
+
+# Reduced k-means
+
+```{r}
+# apply Reduced K-means to iris (class variable is excluded)
+out.cluspca = clustrd::cluspca(doc2_idf, 5, 2, seed = 1234)
+summary(out.cluspca)
+```
+
+An important feature of Reduced K-means is that we can visualize observations, cluster centers and variables on a low-dimensional space, similar to PCA.
+
+```{r}
+# plotting the RKM solution
+plot(out.cluspca, cludesc = TRUE)
+```
+
+It is helpful to compute the confusion matrix between the true cluster partition (df_bbc[, 5]) and the one obtained by Reduced K-means
+(out.cluspca$cluster). The agreement between the obtained partition and the true partition is moderate, according to an adjusted Rand index of .62.
+
+```{r}
+# use labels as vector and compare it to vectors of predicted labels (cluster)
+table(df.classic4.labels.as.vec, out.cluspca$cluster)
+```
+
+# Choosing the number of clusters and dimensions
+
+```{r}
+
+scal_dat = ClusterR::center_scale(doc2_sum)     # center and scale the data
+
+# Cluster quality assessment based on the average silhouette width 
+# in the low dimensional space
+bestRKM = clustrd:: tuneclus(scal_dat, 3:8, 2:4, method = "RKM", criterion = "asw",
+          dst = "low")
+bestRKM
+```
+
+
+
+
