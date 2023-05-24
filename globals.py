@@ -13,9 +13,12 @@ PARAMS={
 }
 
 FILES_PATH={
-    "classic3":"/home/khaldi/Downloads/classic3.csv",
-    "classic4":"/home/khaldi/Downloads/classic4.csv",
-    "bbc":"/home/khaldi/Downloads/bbc.csv"
+    "classic3":"/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets"
+               "/data/bbc.csv",
+    "classic4":"/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets"
+               "/data/classic4.csv",
+    "bbc":"/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets/data"
+          "/bbc.csv"
 }
 
 representation="glove"

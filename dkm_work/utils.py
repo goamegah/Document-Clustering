@@ -10,7 +10,9 @@ from scipy.sparse import csr_matrix
 from core.word_embedding import Word2VecVectorizer
 from dkm_work.linear_assignment_ import linear_assignment
 from gensim.models import KeyedVectors
+
 TF_FLOAT_TYPE = tf.float32
+
 
 def cluster_acc(y_true, y_pred):
     """
@@ -28,9 +30,10 @@ def cluster_acc(y_true, y_pred):
     w = np.zeros((D, D), dtype=np.int64)
     for i in range(y_pred.size):
         w[y_pred[i], y_true[i]] += 1
-    ind = linear_assignment(w.max() - w) # Optimal label mapping based on the Hungarian algorithm
+    ind = linear_assignment(w.max() - w)  # Optimal label mapping based on the Hungarian algorithm
 
     return sum([w[i, j] for i, j in ind]) * 1.0 / y_pred.size
+
 
 def next_batch(num, data):
     """
@@ -55,6 +58,7 @@ def shuffle(data, target):
 
     return shuffled_data, shuffled_labels, indices
 
+
 def read_list(file_name, type='int'):
     with open(file_name, 'r') as f:
         lines = f.readlines()
@@ -68,6 +72,7 @@ def read_list(file_name, type='int'):
         print("Unknown type")
         return None
 
+
 def write_list(file_name, array):
     os.makedirs(os.path.dirname(file_name), exist_ok=True)
     with open(file_name, 'w') as f:
@@ -75,35 +80,34 @@ def write_list(file_name, array):
             f.write("{}\n".format(item))
 
 
-def load_dataset(file_path,embeddings_path,method="glove"):
+def load_dataset(file_path, embeddings_path, method="glove"):
     """
         load dataset and return Bag of Word Representation of df["text"]
     """
-    df=pd.read_csv(file_path)
+    df = pd.read_csv(file_path)
     if method == "glove":
-        model_emb = KeyedVectors\
+        model_emb = KeyedVectors \
             .load_word2vec_format(embeddings_path, binary=False, no_header=True)
         vectorizer = Word2VecVectorizer(model=model_emb)
-        X=vectorizer.fit_transform(df["text"])
+        X = vectorizer.fit_transform(df["text"])
     elif method == "Word2Vec":
-        model_emb=KeyedVectors\
+        model_emb = KeyedVectors \
             .load_word2vec_format(embeddings_path, binary=True)
         vectorizer = Word2VecVectorizer(model=model_emb)
-        X=vectorizer.fit_transform(df["text"])
+        X = vectorizer.fit_transform(df["text"])
+
     labels = df["label"].values
     classes = np.unique(labels)
     class_to_index = {c: i for i, c in enumerate(classes)}
-    n = len(labels) #number of samples
-    k = len(classes) #number of classes
-    #creation of matrice M which M[i,j] =1 if row i belong to class j
-    y = np.zeros((n, k),dtype=np.uint8)
+    n = len(labels)  # number of samples
+    k = len(classes)  # number of classes
+
+    # creation of matrice M which M[i,j] =1 if row i belong to class j
+    y = np.zeros((n, k), dtype=np.uint8)
     for i, label in enumerate(labels):
         j = class_to_index[label]
         y[i, j] = 1
-    target_names=list(sorted(df["label"].unique()))
 
-    return Bunch(data=X,target=csr_matrix(y),
-                 target_names=target_names),classes
+    target_names = list(sorted(df["label"].unique()))
 
-
-
+    return Bunch(data=X, target=csr_matrix(y), target_names=target_names), classes
