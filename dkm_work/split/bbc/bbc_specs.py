@@ -8,8 +8,9 @@ import scipy.sparse as sp
 
 file_path = FILES_PATH["bbc"]
 df_name = "bbc"
-test_path = f"/home/khaldi/Documents/text-clustering/dkm_work/split/{df_name}/test"
-validation_path = f"/home/khaldi/Documents/text-clustering/dkm_work/split/{df_name}/validation"
+test_path = f"/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/dkm_work/split/{df_name}/test"
+validation_path = f"/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/dkm_work" \
+                  f"/split/{df_name}/validation"
 
 # Fetch the dataset
 dataset, classes = load_dataset(file_path, method=representation, embeddings_path=embeddings_path)
