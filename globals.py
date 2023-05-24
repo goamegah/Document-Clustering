@@ -1,7 +1,7 @@
 PARAMS = {
     # Parameter setting from arguments
-    "p_epochs": 50,  # Number of pretraining epochs
-    "f_epochs": 50,  # Number of fine-tuning epochs per alpha value
+    "p_epochs": 2500,  # Number of pretraining epochs
+    "f_epochs": 300,  # Number of fine-tuning epochs per alpha value
     "lambda": 1.0,
     # Value of the hyperparameter weighing the clustering loss against the reconstruction loss
     "batch_size": 256,  # Size of the mini-batches used in the stochastic optimizer
