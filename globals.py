@@ -19,7 +19,13 @@ FILES_PATH = {
     "classic4": "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets"
                 "/data/classic4.csv",
     "bbc": "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets/data"
-           "/bbc.csv"
+           "/bbc.csv",
+    "bbc_doc2vec": "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core"
+                   "/datasets/data/bbc_doc2vec.csv",
+    "classic4_doc2vec": "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core"
+                        "/datasets/data/classic4_doc2vec.csv",
+    "classic3_doc2vec": "/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core"
+                        "/datasets/data/classic3_doc2vec.csv",
 }
 
 representation = "glove"

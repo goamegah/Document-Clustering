@@ -1,0 +1,110 @@
+---
+title: "Data Science Avancées"
+# output: pdf_document
+date: "2023-03-28"
+output:
+  pdf_document: 
+    fig_height: 6
+    keep_tex: yes
+    highlight: kate
+    latex_engine: xelatex
+    number_sections: yes
+  html_document:
+    highlight: kate
+  word_document:
+    highlight: kate
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Dataset classic 3
+
+```{r}
+# Representation Word2vec
+path="/home/godwin/Documents/Uparis/M1MLSD2223/ue_data2/text-clustering/core/datasets/data/classic3_doc2vec.csv"
+df.classic3.doc2vec = read.csv(path)
+
+# convert as factor
+df.classic3.doc2vec = df.classic3.doc2vec |>
+  dplyr::mutate(label = factor(label))
+```
+
+
+```{r}
+df.classic3.doc2vec.label = df.classic3.doc2vec["label"]
+df.classic3.doc2vec.label.as.vec = dplyr::pull(df.classic3.doc2vec, label)
+```
+
+
+```{r}
+df.classic3.doc2vec.data = dplyr::select(df.classic3.doc2vec, -c(1, "label"))
+```
+
+```{r}
+outRKM = clustrd::cluspca(
+  data = df.classic3.doc2vec.data, 
+  nclus = 3, ndim = 2, method = "RKM", 
+  rotation = "varimax", scale = FALSE, 
+  nstart = 10)
+
+
+summary(outRKM)
+```
+
+```{r}
+#ploter avec 2 dimensions  
+plot(outRKM, cludesc = TRUE)
+```
+```{r}
+table(df.classic3.doc2vec.label.as.vec, outRKM$cluster)
+```
+
+# Choosing the number of clusters and dimensions
+
+```{r}
+# Cluster quality assessment based on the average silhouette width 
+# in the low dimensional space
+bestRKM = clustrd::tuneclus(data = df.classic3.doc2vec.data, 
+                            nclusrange = 3:5, 
+                            ndimrange =  2:4, 
+                            method = "RKM", 
+                            criterion = "asw",
+                            dst = "low")
+bestRKM
+```
+
+```{r}
+plot(bestRKM)
+```
+
+# Assessing Cluster Stability
+
+```{r}
+# Global stability assessment: Reduced K-means from 2 to 4 clusters
+boot_RKM = clustrd::global_bootclus(data = df.classic3.doc2vec.data, 
+                           nclusrange = 2:4, method = "RKM", 
+                           nboot = 20, nstart = 50, seed = 1234)
+summary(boot_RKM$rand)
+```
+
+
+```{r}
+boxplot(boot_RKM$rand, xlab = "Number of clusters", ylab = "adjusted Rand Index")
+```
+
+
+```{r}
+# Cluster-wise stability assessment: Reduced K-means from 2 to 4 clusters
+bootres = local_bootclus(df.classic3.doc2vec.data, nclus = 3, ndim = 2,
+method = "RKM", nboot = 20, nstart = 50, seed = 1234)
+summary(bootres$Jaccard)
+```
+
+
+```{r}
+boxplot(bootres$Jaccard, xlab = "cluster number", ylab = "Jaccard similarity (cluster stability)")
+```
+
